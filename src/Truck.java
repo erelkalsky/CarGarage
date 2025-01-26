@@ -1,4 +1,15 @@
-package PACKAGE_NAME;
+public class Truck extends Vehicle {
+    public Truck(String name) {
+        super(name);
+    }
 
-public class Truck {
+    @Override
+    public double getFixTime() {
+        return 10.0;
+    }
+
+    @Override
+    public void fixed() {
+        System.out.println("The engine has been repaired");
+    }
 }

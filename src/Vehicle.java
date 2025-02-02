@@ -1,17 +1,12 @@
 public abstract class Vehicle implements Fixable {
-    protected String name;
+    private String model;
 
-    public Vehicle(String name) {
-        this.name = name;
+    public Vehicle(String model) {
+        this.model = model;
     }
 
+    public String getModel() {
+        return model;
+    }
     public abstract double getFixTime();
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
 }

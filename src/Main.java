@@ -15,36 +15,24 @@ public class Main {
 
             if (choice == 0) break;
 
-            System.out.println("Enter vehicle name:");
-            String name = scanner.nextLine();
+            System.out.println("Enter vehicle model:");
+            String model = scanner.nextLine();
 
-            Vehicle vehicle;
-            switch (choice) {
-                case 1:
-                    vehicle = new Motorcycle(name);
-                    break;
-                case 2:
-                    vehicle = new Car(name);
-                    break;
-                case 3:
-                    vehicle = new Truck(name);
-                    break;
-                default:
-                    System.out.println("Invalid option, try again.");
-                    continue;
-            }
-
-            DB.addVehicle(vehicle);
+            build(choice, model);
         }
 
-        Garage garage = new Garage(protocolGarage, DB.getVehicles());
-        garage.start();
+        Garage garage = new Garage(protocolGarage);
+        garage.startWork(DB.getVehiclesMap());
     }
 
-    public static ProtocolGarage protocolGarage = new ProtocolGarage() {
+    private static ProtocolGarage protocolGarage = new ProtocolGarage() {
         @Override
         public void fixed() {
-            System.out.println("\nAll vehicles have been repaired.");
+            System.out.println("Another vehicle fixed.");
         }
     };
+
+    public static void build(int type, String model) {
+        DB.addVehicle(type, model);
+    }
 }

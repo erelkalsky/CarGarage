@@ -1,7 +1,7 @@
 public class Car extends Vehicle {
-
-    public Car(String name) {
-        super(name);
+    private static final int NUM_OF_WHEELS = 4;
+    public Car(String model) {
+        super(model);
     }
 
     @Override
@@ -11,6 +11,10 @@ public class Car extends Vehicle {
 
     @Override
     public void fixed() {
-        System.out.println("The steering wheel has been repaired");
+        System.out.println("Car (" + getModel() + ") is fixed - " + NUM_OF_WHEELS + " wheels");
+    }
+
+    public static Car build(String model) {
+        return new Car(model);
     }
 }

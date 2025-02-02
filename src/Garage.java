@@ -1,53 +1,68 @@
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.Queue;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
 public class Garage {
-
-    private ProtocolGarage protocol;
+    private ProtocolGarage protocolGarage;
     private ArrayList<Vehicle> vehicles;
-    private int currentIndex = 0;
-    private double remainingFixTime = 0;
-    private ScheduledExecutorService executor;
+    private boolean isGarageOpen = true;
+    private int currentVehicle = 0;
+    private int hour = 0;
 
-    public Garage(ProtocolGarage protocolGarage, ArrayList<Vehicle> vehicles) {
-        this.protocol = protocolGarage;
-        this.vehicles = vehicles;
+    public Garage(ProtocolGarage protocolGarage) {
+        this.protocolGarage = protocolGarage;
     }
 
-    public void start() {
-        executor = Executors.newScheduledThreadPool(1);
-        executor.scheduleAtFixedRate(() -> tick(), 0, 1, TimeUnit.SECONDS);
+    public void startWork(HashMap<Integer, Queue<Vehicle>> vehiclesMap) {
+        // convert the map to array
+        convertVehicles(vehiclesMap);
+
+        Runnable helloRunnable = new Runnable() {
+            @Override
+            public void run() {
+                tick();
+            }
+        };
+
+        ScheduledExecutorService executor = Executors.newScheduledThreadPool(1);
+        executor.scheduleAtFixedRate(helloRunnable, 0, 1, TimeUnit.SECONDS);
     }
 
     private void tick() {
-        if (currentIndex < vehicles.size()) {
-            Vehicle currentVehicle = vehicles.get(currentIndex);
+        if (!isGarageOpen) {
+            return;
+        }
 
-            if (remainingFixTime == 0) {
-                remainingFixTime = currentVehicle.getFixTime();
-                System.out.println("Fixing: " + currentVehicle.getName());
-            }
+        hour++;
+        System.out.println("dubug. hour = " + hour);
+        Vehicle v = vehicles.get(currentVehicle);
 
-            remainingFixTime--;
+        if (v.getFixTime() == hour) {
+            // vehicle fixed
 
-            if (remainingFixTime == 0) {
-                if (currentVehicle instanceof Fixable) {
-                    ((Fixable) currentVehicle).fixed();
-                }
-                currentIndex++;
-            }
-        } else {
-            protocol.fixed();
-            stop();
+            v.fixed();
+            protocolGarage.fixed();
+            hour = 0;
+            currentVehicle++;
+        }
+
+        if (currentVehicle == vehicles.size()) {
+            isGarageOpen = false;
+            System.out.println("All fixed = day off!!");
         }
     }
 
-    private void stop() {
-        if (executor != null && !executor.isShutdown()) {
-            executor.shutdown();
-            System.out.println("The garage stopped working.");
+    private void convertVehicles(HashMap<Integer, Queue<Vehicle>> vehiclesMap) {
+        ArrayList<Vehicle> mergedList = new ArrayList<>();
+
+        for (Queue<Vehicle> queue : vehiclesMap.values()) {
+            mergedList.addAll(queue);
         }
+
+        vehicles = mergedList;
     }
 }

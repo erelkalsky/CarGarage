@@ -37,7 +37,14 @@ public class Main {
             DB.addVehicle(vehicle);
         }
 
-        Garage garage = new Garage(DB.getVehicles());
-        garage.fixed();
+        Garage garage = new Garage(protocolGarage, DB.getVehicles());
+        garage.start();
     }
+
+    public static ProtocolGarage protocolGarage = new ProtocolGarage() {
+        @Override
+        public void fixed() {
+            System.out.println("\nAll vehicles have been repaired.");
+        }
+    };
 }
